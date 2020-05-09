@@ -1,0 +1,91 @@
+clc
+clearall
+closeall
+% state space model of flight autopilot system
+A=[-0.04 -1.933 0 0 -1;
+ -0.00016 -0.813 0 0 0.0011;
+ 0 1 0 0 0;
+ -0.00594 0 1 -0.07 -0.059;
+ 1 0 0 1 0];   % system matrix
+B=[0.1859;-0.0033; 0 ;0.008; 0]; % input vector
+C=[0 1 0 0 0]; % output vector
+D=[0];transmission matrix
+system_ss=ss(A,B,C,D,1)   % state space
+% Observability matrix
+observability=obsv(A,C)
+% Observability checking
+if rank(A)<=rank(observability)
+disp('The system is completely observable')
+else
+disp('Not observable')
+end
+
+[Ad,Bd,Cd,Dd]=ssdata(sys2)
+% Intial state vector
+X=[10;100;0;0];
+% Intial covariance
+P=eye(4).*(1000);
+% Process noise matrix
+Q=1.000;
+% Measurement noise
+R=0.000001;
+% Control input
+U=10;
+fori=1:100
+%predicition equation
+ X=Ad*X+Bd*U;
+ P1=Ad*P*Ad'+Q;
+ Y=X+0.0001*rand(4,1);
+Y1=Y';
+ Z=C*Y+0.0006*rand(1);
+%update equation
+ K=(P1*C')/(C*P1*C'+R);
+Xk=X+K*(Z-C*X);
+Pxk=(eye(4)-K*C)*P1';
+X1=X';
+ E=Y1-X1;
+ t(i)=i*0.01;
+ true(i,:)=Y1;
+ esti(i,:)=X1;
+ error(i,:)=E;
+end
+figure(1);
+plot(t,true(:,1),'b',t,esti(:,1),'-r');
+xlabel('Time in Seconds');ylabel('X1');
+title('True and Estimated state of X1 ');
+legend('True','Estimated');
+figure(2);
+plot(t,error(:,1),('k'));
+xlabel('Time in seconds'); ylabel('Error X1');
+title('Error plot of X1');
+figure(3)
+plot(t,true(:,2),'b',t,esti(:,2),'-r');
+xlabel('Time in Seconds');ylabel('X2');
+title('True and Estimated state of X2');
+legend('True','Estimated');
+figure(4);
+plot(t,error(:,2),('k'));
+xlabel('time in seconds'); ylabel('error X2');
+title('Error plot of X2');
+figure(5)
+plot(t,true(:,3),'b',t,esti(:,3),'-r');
+xlabel('Time in Seconds');ylabel('X3');
+title('True and Estimated state of X3');
+legend('True','Estimated');
+figure(6);
+plot(t,error(:,3),('k'));
+xlabel('Time in seconds'); ylabel('Error X3');
+title('Error plot of x3 ');
+figure(7)
+plot(t,true(:,4),'b',t,esti(:,4),'-r');
+xlabel('Time in Seconds');ylabel('X4');
+title('True and Estimated state of X4');
+legend('True','Estimated');
+figure(8);
+plot(t,error(:,4),('k'));
+xlabel('Time in seconds'); ylabel('Error X4');
+title('Error plot of X4');
+
+                         
+                                           
+               
